@@ -1,0 +1,29 @@
+version: "2.0"
+services:
+    mongodb:
+        image: mongo:latest
+        environment:
+          - MONGO_DATA_DIR=/data/db
+          - MONGO_LOG_DIR=/dev/null
+
+          # TODO: Use environment variables here
+          - MONGODB_USER="user"
+          - MONGODB_PASS="pass"
+
+        # TODO: Mount the db to the host pc if needed:
+        #  - ./data/db:/data/db
+
+        ports:
+            - 27017:27017
+
+        command: mongod --smallfiles --logpath=/dev/null
+
+    web:
+        build: .
+        command: bash -c "echo environment variable PASSWORD IS '$PASSWORD' && bundle exec rails s -p 80 -b '0.0.0.0'"
+        volumes:
+          - .:/myapp
+        ports:
+          - 80:80
+        depends_on:
+          - mongodb
